@@ -1,0 +1,1 @@
+exports.BcryptSalt = 10
