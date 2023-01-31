@@ -1,9 +1,8 @@
-const { findOneAndDelete } = require('../entities/User')
 const UserRepository = require('../repositories/UserRepository')
 
 class DeleteUserService {
-  async deleteUser (newDeleteUser) {
-    newDeleteUser.email = await findOneAndDelete({ newDeleteUser })
+  async deleteUser (deleteUserDTO) {
+    UserRepository.deleteUser(deleteUserDTO)
   }
 }
 
