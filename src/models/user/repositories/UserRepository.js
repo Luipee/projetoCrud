@@ -1,7 +1,8 @@
 
 const { DeleteUserDTO } = require('../dtos/DeleteUserDTO')
 const { GetUserDTO } = require('../dtos/GetUserDTO')
-const { UpdateUserDTO } = require('../dtos/UpdateUserDTOs')
+const { PutUserDTO } = require('../dtos/PutUserDTO')
+const { UpdateUserDTO } = require('../dtos/UpdateUserDTO')
 const User = require('../entities/User')
 
 class UserRepository {
@@ -35,11 +36,16 @@ class UserRepository {
     return getUserDTOs
   }
 
-  async updateUser () {
-    const updateUser = await User.find({ email: UpdateUserDTO.email })
-
+  async updateUser (updateUserDTO) {
+    const { paramEmail, ...userData } = updateUserDTO
+    const updateUser = await User.findOneAndUpdate({ email: paramEmail }, userData, { new: true })
     return new UpdateUserDTO(updateUser)
   }
-}
 
+  async putUser (putUserDTO) {
+    const { paramEmail, ...userData } = putUserDTO
+    const putUser = await User.findOneAndUpdate({ email: paramEmail }, userData, { new: true })
+    return new PutUserDTO(putUser)
+  }
+}
 module.exports = new UserRepository()

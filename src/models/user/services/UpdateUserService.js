@@ -1,8 +1,8 @@
 const UserRepository = require('../repositories/UserRepository')
 
 class UpdateUserService {
-  async updateAllUser (GetUserDTO) {
-    return await UserRepository.updateAllUser(GetUserDTO)
+  async updateUser (updateUserDTO) {
+    return await UserRepository.updateUser(updateUserDTO)
   }
 }
 

@@ -2,8 +2,12 @@
 const UserRepository = require('../repositories/UserRepository')
 
 class GetUserService {
-  async getAllUser (GetUserDTO) {
-    return await UserRepository.getAllUser(GetUserDTO)
+  async getAllUser () {
+    return await UserRepository.getAllUser()
+  }
+
+  async getUserByEmail (GetUserDTO) {
+    return await UserRepository.getUserByEmail(GetUserDTO)
   }
 }
 

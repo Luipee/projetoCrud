@@ -1,5 +1,6 @@
 class UpdateUserDTO {
   name
+  paramEmail
   email
   password
 

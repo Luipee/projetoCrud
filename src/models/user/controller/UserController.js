@@ -12,6 +12,10 @@ const GetUserService = require('../services/GetUserService')
 const { UserGetValidator } = require('../validators/UserGetValidator')
 const UpdateUserService = require('../services/UpdateUserService')
 const { UserUpdateValidator } = require('../validators/UserUpdateValidator')
+const { UpdateUserDTO } = require('../dtos/UpdateUserDTO')
+const { PutUserDTO } = require('../dtos/PutUserDTO')
+const PutUserService = require('../services/PutUserService')
+const { UserPutValidator } = require('../validators/UserPutValidator')
 
 class UserController {
   async createUser (req, res) {
@@ -20,7 +24,6 @@ class UserController {
       const { error } = UserCreationValidator(req.body)
 
       if (error) {
-        console.log(error)
         return res.status(400).send('Invalid Request')
       }
       await CreateUserService.addUser(newUserDTO)
@@ -34,12 +37,11 @@ class UserController {
     try {
       const { error } = UserLoginValidator(req.body)
       if (error) {
-        console.log(error)
         return res.status(400).send('Invalid request')
       }
       const newLoginUserDTO = new LoginUserDTO(req.body)
       await LoginUserService.loginUser(newLoginUserDTO)
-      res.status(201).send('Login realizado')
+      res.status(200).send('Login realizado')
     } catch (error) {
       res.status(500).send('Fail to Login')
     }
@@ -49,12 +51,11 @@ class UserController {
     try {
       const { error } = UserDeleteValidator(req.body)
       if (error) {
-        console.log(error)
         return res.status(400).send('Invalid request')
       }
       const newDeleteUserDTO = new DeleteUserDTO(req.body)
       await DeleteUserService.deleteUser(newDeleteUserDTO)
-      res.status(201).send('Usuário excluido com sucesso')
+      res.status(200).send('Usuário excluido com sucesso')
     } catch (error) {
       res.status(500).send('Fail to delete')
     }
@@ -64,13 +65,14 @@ class UserController {
     try {
       const { error } = UserGetValidator(req.query)
       if (error) {
-        console.log(error)
         return res.status(400).send('Invalid Request')
       }
+
       const newGetUserDTO = new GetUserDTO(req.query)
+
       const userFound = await GetUserService.getUserByEmail(newGetUserDTO)
-      console.log(userFound)
-      res.status(201).send(userFound)
+
+      res.status(200).send(userFound)
     } catch (error) {
       res.status(500).send('Fail to Get email')
     }
@@ -79,26 +81,43 @@ class UserController {
   async getAllUser (req, res) {
     try {
       const getAllUser = await GetUserService.getAllUser()
-      console.log(getAllUser)
-      res.status(201).send(getAllUser)
+
+      res.status(200).send(getAllUser)
     } catch (error) {
       res.status(500).send('Fail to Get all users')
     }
   }
 
-  async putUsers (req, res) {
+  async updateUserByEmail (req, res) {
     try {
-      const { error } = UserUpdateValidator(req.query)
-      if (error) {
-        console.log(error)
+      const { errorBody } = UserUpdateValidator(req.body)
+      const { errorParam } = UserGetValidator(req.query)
+      if (errorBody || errorParam) {
         return res.status(400).send('Invalid Request')
       }
-      const newUpdateUserDTO = new GetUserDTO(req.body)
-      const userUpdate = await UpdateUserService.updateUserByEmail(newUpdateUserDTO)
-      console.log(userUpdate)
-      res.status(201).send(userUpdate)
+      const newUpdateUserDTO = new UpdateUserDTO(req.body)
+      newUpdateUserDTO.paramEmail = req.query.email
+      const userUpdate = await UpdateUserService.updateUser(newUpdateUserDTO)
+
+      res.status(200).send(userUpdate)
     } catch (error) {
       res.status(500).send('Fail to Get email')
+    }
+  }
+
+  async putUserByEmail (req, res) {
+    try {
+      const { errorBody } = UserPutValidator(req.body)
+      const { errorParam } = UserGetValidator(req.query)
+      if (errorBody || errorParam) {
+        return res.status(400).send('Invalid Request')
+      }
+      const newPutUserDTO = new PutUserDTO(req.body)
+      newPutUserDTO.paramEmail = req.query.email
+      const userPut = await PutUserService.putUser(newPutUserDTO)
+      res.status(200).send(userPut)
+    } catch (error) {
+      res.status(500).send('Fail to update User')
     }
   }
 }
